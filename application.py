@@ -22,26 +22,27 @@ def enter():
     city = request.form.get("city")
     state = request.form.get("state")
 
-    # Return 400 error if no name on form
-    if not name:
-        abort(400)
-    
     # Returns a message with the request in JSON format
-    if request.headers['Content-Type'] == 'application/json':
-        return "JSON Message: " + json.dumps(request.json)
+    # if request.headers['Content-Type'] == 'application/json':
+    #     return "JSON Message: " + json.dumps(request.json)
 
     # POST Request
     if request.method == "POST":
+            # Return 400 error if no name on form
+        if not name:
+            abort(400)
+
         connection.execute("INSERT INTO entrants (name, city, state) \
             VALUES (:name, :city, :state)", name=name, city=city, state=state)
         return 201
 
     # PATCH Request
     elif request.method == "PATCH":
-        connection.execute("UPDATE entrants SET name = :name, city = :city, state = :state WHERE id = :entrant_id",
-            name=name, city=city, state=state, entrant_id=entrant_id)
+        connection.execute("UPDATE entrants SET name = :name, city = :city, state = :state \
+                    WHERE id = :entrant_id", name=name, city=city, state=state,
+                           entrant_id=entrant_id)
         return 201
-    
+
     # DELETE Request
     elif request.method == "DELETE":
         connection.execute("DELETE FROM entrants WHERE id = :entrant_id", entrant_id=entrant_id)
@@ -49,6 +50,6 @@ def enter():
     # GET Request
     else:
         query = connection.execute("SELECT * FROM entrants")
-        return jsonify({"entrants": query}), 201
+        return json.dumps([dict(row) for row in query]), 201
 
 # @APP.route("/venues", methods=["GET", "POST", "PATCH", "DELETE"])
