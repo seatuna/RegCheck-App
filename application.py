@@ -154,6 +154,29 @@ def venues():
         query = connection.execute("SELECT * FROM venues")
         return json.dumps({"venues": [dict(row) for row in query]}), 201
 
+@APP.route("/venues/<int:venue_id>/events", methods=["GET"])
+def get_events_by_venue(venue_id):
+    """ GET events associated with a specified venue """
+
+     # connect to DB and start transaction
+    connection = DB.connect()
+    transaction = connection.begin()
+
+    if request.json:
+        submitted_data = request.json["venues"]
+        success_message = request.method + " successful!\n"
+
+    try:
+        event_id = submitted_data["event_id"]
+        query = connection.execute("SELECT * FROM events WHERE venue_id = :venue_id", venue_id=venue_id)
+        return json.dumps({ "events": [dict(row) for row in query] }), 201
+    except exc.SQLAlchemyError as error:
+        transaction.rollback()
+        print(error)
+        abort(400)
+    finally:
+        connection.close()
+
 @APP.route("/events", methods=["GET", "POST", "PATCH", "DELETE"])
 def events():
     """ GET, POST, PATCH, and DELETE venues for event registration """
