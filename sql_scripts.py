@@ -30,12 +30,15 @@ def main():
                                 state TEXT
                             )'''
 
+    # Join table for events and entrants
     create_events_entrants_table = '''CREATE TABLE events_entrants (
                                         id INTEGER PRIMARY KEY,
-                                        events_id INTEGER,
-                                        entrants_id INTEGER,
-                                        FOREIGN KEY (events_id) REFERENCES events (id),
-                                        FOREIGN KEY (entrants_id) REFERENCES entrants (id)
+                                        event_id INTEGER,
+                                        entrant_id INTEGER,
+                                        present INTEGER DEFAULT 0,
+                                        paid INTEGER DEFAULT 0,
+                                        FOREIGN KEY (event_id) REFERENCES events (id),
+                                        FOREIGN KEY (entrant_id) REFERENCES entrants (id)
                                     )'''
 
     # create venues, events, entrants tables if db connection is successful

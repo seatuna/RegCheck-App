@@ -163,7 +163,7 @@ def get_events_by_venue(venue_id):
     transaction = connection.begin()
 
     if request.json:
-        submitted_data = request.json["venues"]
+        submitted_data = request.json["events_by_venue"]
         success_message = request.method + " successful!\n"
 
     try:
@@ -250,4 +250,67 @@ def events():
     # GET Request for events
     else:
         query = connection.execute("SELECT * FROM events")
+        return json.dumps({"events": [dict(row) for row in query]}), 201
+
+@APP.route("/events_entrants", methods=["GET", "POST", "DELETE"])
+def events_entrants():
+    """ GET, POST, DELETE for events_entrants join table """
+    # connect to DB and start transaction
+    connection = DB.connect()
+    transaction = connection.begin()
+
+    # get data for POST / PATCH / DELETE requests
+    if request.json:
+        submitted_data = request.json["events_entrants"]
+        success_message = request.method + ' successful!\n'
+
+    # POST Request for events
+    if request.method == "POST":
+        entrant_id = submitted_data["entrant_id"]
+        event_id = submitted_data["event_id"]
+
+        try:
+            connection.execute("INSERT INTO events_entrants (event_id, entrant_id) \
+                    VALUES (:event_id, :entrant_id)", event_id=event_id, entrant_id=entrant_id)
+            transaction.commit()
+            return success_message, 201
+        except exc.SQLAlchemyError as error:
+            transaction.rollback()
+            print(error)
+            abort(400)
+        finally:
+            connection.close()
+
+    # DELETE Request for events
+    elif request.method == "DELETE":
+        entrant_id = submitted_data["entrant_id"]
+        event_id = submitted_data["id"]
+
+        try:
+            connection.execute("DELETE FROM events_entrants WHERE event_id = :event_id \
+                    AND entrant_id = :entrant_id", event_id=event_id, entrant_id=entrant_id)
+            transaction.commit()
+            return success_message, 201
+        except exc.SQLAlchemyError as error:
+            transaction.rollback()
+            print(error)
+            abort(400)
+        finally:
+            connection.close()
+
+    # GET Request for events
+    else:
+        query = connection.execute("SELECT * FROM events_entrants")
+        return json.dumps({"events_entrants": [dict(row) for row in query]}), 201
+
+@APP.route("/events/<int:event_id>", methods=["GET"])
+def get_event_details(event_id):
+    """ GET, POST, PATCH, DELETE event details and entrants """
+
+    # connect to DB and start transaction
+    connection = DB.connect()
+    transaction = connection.begin()
+
+    if request.method == "GET":
+        query = connection.execute("SELECT * FROM events_entrants WHERE event_id = :event_id", event_id=event_id)
         return json.dumps({"events": [dict(row) for row in query]}), 201
