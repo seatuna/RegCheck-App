@@ -1,6 +1,6 @@
 #!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
-""" Python application for registration and check-in at events """
-from flask import Flask, request, json, abort
+""" Python Flask JSON API for registration and check-in at events """
+from flask import Flask, request, abort, jsonify
 from sqlalchemy import create_engine, exc
 
 # configure application
@@ -8,6 +8,15 @@ APP = Flask(__name__)
 
 # connect db
 DB = create_engine("sqlite:///travcon.db")
+
+""" Routes List
+    /entrants
+    /venues
+    /venues/<int:venue_id>/events
+    /events
+    /events_entrants
+    /events/<int:event_id>
+"""
 
 @APP.route("/entrants", methods=["GET", "POST", "PATCH", "DELETE"])
 def entrants():
@@ -30,7 +39,7 @@ def entrants():
 
         try:
             connection.execute("INSERT INTO entrants (name, city, state) \
-                VALUES (:name, :city, :state)", name=name, city=city, state=state)
+                               VALUES (:name, :city, :state)", name=name, city=city, state=state)
             transaction.commit()
             return success_message, 201
         except exc.SQLAlchemyError as error:
@@ -49,7 +58,7 @@ def entrants():
 
         try:
             connection.execute("UPDATE entrants SET name = :name, city = :city, state = :state \
-                        WHERE id = :entrant_id", name=name, city=city, state=state,
+                               WHERE id = :entrant_id", name=name, city=city, state=state,
                                entrant_id=entrant_id)
             transaction.commit()
             return success_message, 201
@@ -78,7 +87,7 @@ def entrants():
     # GET Request for entrants
     else:
         query = connection.execute("SELECT * FROM entrants")
-        return json.dumps({"entrants": [dict(row) for row in query]}), 201
+        return jsonify({"entrants": [dict(row) for row in query]}), 201
 
 @APP.route("/venues", methods=["GET", "POST", "PATCH", "DELETE"])
 def venues():
@@ -102,7 +111,7 @@ def venues():
 
         try:
             connection.execute("INSERT INTO venues (name, address, city, state) \
-                VALUES (:name, :address, :city, :state)", name=name, address=address,
+                               VALUES (:name, :address, :city, :state)", name=name, address=address,
                                city=city, state=state)
             transaction.commit()
             return success_message, 201
@@ -123,8 +132,8 @@ def venues():
 
         try:
             connection.execute("UPDATE venues SET name = :name, address = :address, \
-            city = :city, state = :state WHERE id = :venue_id", name=name, address=address,
-                               city=city, state=state, venue_id=venue_id)
+                               city = :city, state = :state WHERE id = :venue_id", name=name,
+                               address=address, city=city, state=state, venue_id=venue_id)
             transaction.commit()
             return success_message, 201
         except exc.SQLAlchemyError as error:
@@ -152,7 +161,7 @@ def venues():
     # GET Request for venues
     else:
         query = connection.execute("SELECT * FROM venues")
-        return json.dumps({"venues": [dict(row) for row in query]}), 201
+        return jsonify({"venues": [dict(row) for row in query]}), 201
 
 @APP.route("/venues/<int:venue_id>/events", methods=["GET"])
 def get_events_by_venue(venue_id):
@@ -162,14 +171,10 @@ def get_events_by_venue(venue_id):
     connection = DB.connect()
     transaction = connection.begin()
 
-    if request.json:
-        submitted_data = request.json["events_by_venue"]
-        success_message = request.method + " successful!\n"
-
     try:
-        event_id = submitted_data["event_id"]
-        query = connection.execute("SELECT * FROM events WHERE venue_id = :venue_id", venue_id=venue_id)
-        return json.dumps({ "events": [dict(row) for row in query] }), 201
+        query = connection.execute("SELECT * FROM events WHERE venue_id = :venue_id",
+                                   venue_id=venue_id)
+        return jsonify({"events": [dict(row) for row in query]}), 201
     except exc.SQLAlchemyError as error:
         transaction.rollback()
         print(error)
@@ -199,7 +204,7 @@ def events():
 
         try:
             connection.execute("INSERT INTO events (name, description, games, venue_id) \
-                    VALUES (:name, :description, :games, :venue_id)", name=name,
+                               VALUES (:name, :description, :games, :venue_id)", name=name,
                                description=description, games=games, venue_id=venue_id)
             transaction.commit()
             return success_message, 201
@@ -220,8 +225,8 @@ def events():
 
         try:
             connection.execute("UPDATE events SET name = :name, description = :description, \
-            games = :games, venue_id = :venue_id WHERE id = :event_id", name=name,
-                               description=description, games=games, venue_id=venue_id,
+                               games = :games, venue_id = :venue_id WHERE id = :event_id",
+                               name=name, description=description, games=games, venue_id=venue_id,
                                event_id=event_id)
             transaction.commit()
             return success_message, 201
@@ -250,11 +255,11 @@ def events():
     # GET Request for events
     else:
         query = connection.execute("SELECT * FROM events")
-        return json.dumps({"events": [dict(row) for row in query]}), 201
+        return jsonify({"events": [dict(row) for row in query]}), 201
 
 @APP.route("/events_entrants", methods=["GET", "POST", "DELETE"])
 def events_entrants():
-    """ GET, POST, DELETE for events_entrants join table """
+    """ GET, POST, PATCH, DELETE for events_entrants join table """
     # connect to DB and start transaction
     connection = DB.connect()
     transaction = connection.begin()
@@ -271,7 +276,28 @@ def events_entrants():
 
         try:
             connection.execute("INSERT INTO events_entrants (event_id, entrant_id) \
-                    VALUES (:event_id, :entrant_id)", event_id=event_id, entrant_id=entrant_id)
+                               VALUES (:event_id, :entrant_id)", event_id=event_id,
+                               entrant_id=entrant_id)
+            transaction.commit()
+            return success_message, 201
+        except exc.SQLAlchemyError as error:
+            transaction.rollback()
+            print(error)
+            abort(400)
+        finally:
+            connection.close()
+
+    # PATCH Request for events_entrants, can be used to check-in entrants and mark paid status
+    if request.method == "POST":
+        entrant_id = submitted_data["entrant_id"]
+        event_id = submitted_data["event_id"]
+        present = submitted_data["present"]
+        paid = submitted_data["paid"]
+
+        try:
+            connection.execute("INSERT INTO events_entrants (event_id, entrant_id, present, paid) \
+                               VALUES (:event_id, :entrant_id, :present, :paid)",
+                               event_id=event_id, entrant_id=entrant_id, present=present, paid=paid)
             transaction.commit()
             return success_message, 201
         except exc.SQLAlchemyError as error:
@@ -288,7 +314,8 @@ def events_entrants():
 
         try:
             connection.execute("DELETE FROM events_entrants WHERE event_id = :event_id \
-                    AND entrant_id = :entrant_id", event_id=event_id, entrant_id=entrant_id)
+                               AND entrant_id = :entrant_id", event_id=event_id,
+                               entrant_id=entrant_id)
             transaction.commit()
             return success_message, 201
         except exc.SQLAlchemyError as error:
@@ -301,16 +328,24 @@ def events_entrants():
     # GET Request for events
     else:
         query = connection.execute("SELECT * FROM events_entrants")
-        return json.dumps({"events_entrants": [dict(row) for row in query]}), 201
+        return jsonify({"events_entrants": [dict(row) for row in query]}), 201
 
 @APP.route("/events/<int:event_id>", methods=["GET"])
 def get_event_details(event_id):
-    """ GET, POST, PATCH, DELETE event details and entrants """
+    """ GET event details and entrants """
 
-    # connect to DB and start transaction
+    # connect to DB
     connection = DB.connect()
-    transaction = connection.begin()
 
+    # GET event
     if request.method == "GET":
-        query = connection.execute("SELECT * FROM events_entrants WHERE event_id = :event_id", event_id=event_id)
-        return json.dumps({"events": [dict(row) for row in query]}), 201
+        query = connection.execute("SELECT * FROM events_entrants WHERE event_id = :event_id",
+                                   event_id=event_id)
+
+        # Create a join table to get all entrants to the event
+        people = connection.execute("SELECT * FROM entrants JOIN events_entrants \
+                                    on entrants.id = events_entrants.entrant_id")
+
+        # returns json
+        return jsonify({"events":[dict(row) for row in query],
+                        "entrants":[dict(row) for row in people]}), 201
