@@ -1,0 +1,85 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Travelling Controller RegCheck</title>
+  <meta name="description" content="Travelling Controller Registration and Check In">
+  <meta name="author" content="Travelling Controller">
+
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+</head>
+
+<body>
+
+  <!-- NAV BAR -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <ul class="nav navbar-nav pull-right">
+      <li class="active"><a href="#">Events</a></li>
+      <li><a href="#">Venues</a></li>
+      <li><a href="#">Entrants</a></li>
+    </ul>
+  </nav>
+
+  <div class="home">
+    <div class="regcheck-title">Registration and Check-In</div>
+  </div>
+
+  <!--<div class="col-md-8 col-md-offset-1">-->
+    <div class="events-container col-md-8 col-md-offset-2" id="events">
+      <h3>Select an event</h3>
+    </div>
+    <div class="event-details col-md-10 col-md-offset-1" id="event-details">
+      <div class="details-info">
+        <h3>Event Details</h3>
+      </div>
+      <div class="event-entrants">
+        <h3>Entrants</h3>
+        <table class="table table-striped">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Present</th>
+            <th>Paid</th>
+          </tr>
+        </table>
+        <div class="add-entrant-to-event-form">
+          <h3>Add Entrant</h3>
+          <form class="form-inline" id="register-form">
+            <div class="form-group">
+              <label for="entrant-name">Name</label>
+              <input type="text" class="form-control" name="name" id="input-entrant-name" placeholder="Name">
+            </div>
+            <div class="form-group">
+              <label for="entrant-city">City</label>
+              <input type="text" class="form-control" name="city" id="input-entrant-city" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label for="entrant-state">State</label>
+              <input type="text" class="form-control" name="state" id="input-entrant-state" placeholder="State">
+            </div>
+            <button type="submit" class="btn btn-primary" id="add-entrant-to-event-btn">Add</button>
+          </form>
+        </div>
+        <br/><br/>
+        <button class="btn btn-default pull-right" id="back-to-events-btn">Back</button>
+      </div>
+    </div>
+    <div class="venues-container col-md-8 col-md-offset-2" id="venues"></div>
+    <div class="entrants-container col-md-8 col-md-offset-2" id="entrants"></div>
+  <!--</div>-->
+
+  <!-- END NAV BAR -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+  <script src="./scripts.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+          integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+          crossorigin="anonymous"></script>
+</body>
+</html>
