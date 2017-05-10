@@ -1,4 +1,3 @@
 Flask
-passlib
 SQLAlchemy
 flask_cors

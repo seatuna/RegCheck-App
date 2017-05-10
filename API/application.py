@@ -1,7 +1,7 @@
 #!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
 """ Python Flask JSON API for registration and check-in at events """
 from flask import Flask, request, abort, jsonify
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from sqlalchemy import create_engine, exc
 
 # configure application
@@ -30,7 +30,7 @@ def entrants():
 
     # get data for POST / PATCH / DELETE requests
     if request.json:
-        submitted_data = request.json["entrants"]
+        submitted_data = request.json["entrant"]
         success_message = request.method + " successful!\n"
 
     # POST Request. Create new entry, commit, and close connection if successful, rollback if error.
@@ -42,8 +42,10 @@ def entrants():
         try:
             connection.execute("INSERT INTO entrants (name, city, state) \
                                VALUES (:name, :city, :state)", name=name, city=city, state=state)
+            new_entry = connection.execute("SELECT * FROM entrants WHERE name = :name", name=name)
+
             transaction.commit()
-            return success_message, 201
+            return jsonify([dict(row) for row in new_entry]), 201
         except exc.SQLAlchemyError as error:
             transaction.rollback()
             print(error)
@@ -341,13 +343,14 @@ def get_event_details(event_id):
 
     # GET event
     if request.method == "GET":
-        query = connection.execute("SELECT * FROM events_entrants WHERE event_id = :event_id",
+        query = connection.execute("SELECT * FROM events WHERE id = :event_id",
                                    event_id=event_id)
 
         # Create a join table to get all entrants to the event
         people = connection.execute("SELECT * FROM entrants JOIN events_entrants \
-                                    on entrants.id = events_entrants.entrant_id")
+                                    on entrants.id = events_entrants.entrant_id \
+                                    WHERE events_entrants.event_id = :event_id", event_id=event_id)
 
         # returns json
-        return jsonify({"events":[dict(row) for row in query],
+        return jsonify({"event":[dict(row) for row in query],
                         "entrants":[dict(row) for row in people]}), 201

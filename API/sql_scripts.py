@@ -27,7 +27,8 @@ def main():
                                 id INTEGER PRIMARY KEY,
                                 name TEXT NOT NULL,
                                 city TEXT,
-                                state TEXT
+                                state TEXT,
+                                CONSTRAINT name_unique UNIQUE (name)
                             )'''
 
     # Join table for events and entrants
