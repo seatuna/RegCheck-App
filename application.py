@@ -1,10 +1,12 @@
 #!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
 """ Python Flask JSON API for registration and check-in at events """
 from flask import Flask, request, abort, jsonify
+from flask_cors import CORS, cross_origin
 from sqlalchemy import create_engine, exc
 
 # configure application
 APP = Flask(__name__)
+CORS(APP)
 
 # connect db
 DB = create_engine("sqlite:///travcon.db")

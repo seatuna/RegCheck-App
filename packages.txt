@@ -1,6 +1,0 @@
-Flask
-Flask-Session
-passlib
-SQLAlchemy
-flask-restful
-flask-jsonpify
