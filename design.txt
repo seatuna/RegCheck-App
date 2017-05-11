@@ -1,0 +1,33 @@
+Technologies used:
+Python
+Flask
+SQLite3
+Javascript, jQuery
+Bootstrap
+
+SQL Tables: 4
+1. Events
+2. Venues
+3. Entrants
+4. Events_Entrants (join table)
+
+I wanted to be able to keep track of not just the events, but also who goes to these events and which venues these people go to.
+The idea is that keeping track of this information can eventually allow us to analyze the data to see trends about what events
+people go to and where they go. In order to do this, I needed to have at least these 4 tables. I wanted the user to be able to
+enter new events, new venues, new entrants, and register people to events. The scope ended up being too much for the time I had to
+spend on this project and took more time than I expected. So at the moment, the front end only allows you to enter new entrants and 
+register them, as well as change their pay status and check them in to an event. The Flask API is set up for everything else as well,
+with GET, POST, PATCH, and DELETE methods available for the tables.
+
+I chose to do this project outside of CS50 IDE because I wanted to be able to set up a project on my own without being given files
+from CS50. I also want to be able to continue to update and improve this app once CS50 is over. By researching how to set up this
+project, I ended up learning a lot about setting up python projects in general.
+
+Bootstrap was used for some quick and easy styling so that the page at least looks presentable. I chose to use jQuery because it was
+fast to set up, and made working with javascript a little easier.
+
+I chose to display the event's entrants in a table because it is easy to see everything in a structured way. I wanted the information
+to be easy to understand at a glance, and clear what you can do on that page. The best apps are easy to use, and intuitive. One of
+the reasons why I decided to include typeahead was to make registration easier in the case that someone who already exists in the
+database is registering. This also ensures that each entrant in the entrants table is unique, and that you're not creating new entries
+for someone every time.

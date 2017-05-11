@@ -1,0 +1,49 @@
+Github Repository = https://github.com/seatuna/RegCheck-App
+GH Pages Link = https://seatuna.github.io/RegCheck-App/index.html (requires server to be running to work)
+
+Getting Started
+
+This project uses python and Flask to create a JSON Rest API consumed by a front-end using javascript and jquery. 
+It was important for me to be able to create something in an environment outside of CS50 IDE so that I can use these
+technologyies in the future without having everything already set up for me. To run this application, please download
+the entire source code. Make sure you have python 3, pip, and virtualenv installed. 
+
+To install virtualenv:
+Run "sudo apt-get install python-virtualenv" in the terminal
+
+Before moving on, open API/application.py and make sure the hash bang on the first line has the correct path to where
+python3 is installed on your computer.  To check, type "which python3" in your terminal.  Copy the output path and replace
+the first line of the file with "#!/<path>".  This will tell the program to use python3.
+
+Then follow these instructions:
+1. Create a virtual environment by entering in the command line:
+"virtualenv <name-of-folder>" (ex. "virtualenv virtual-env")
+This will create a new folder containing all the necessary files.
+
+2. Activate your virtual environment by entering in the command line:
+"source <name-of-folder/bin/activate" (ex. "source virtual-env/bin/activate")
+If you want to deactivate the virtual environment, enter "deactivate"
+in the terminal, but you will want to keep it activated while running the app.
+
+3. Install the python libraries:
+"pip3 install -r API/requirements.txt"
+"pip3 freeze"
+
+4. Now that everything is installed, you will need to create the database and populate it with some data. Do this by running
+the SQL scripts:
+"python3 API/sql_scripts.py"
+"python3 API/populate_db_sql.py"
+
+5. You should now be able to run the Flask server by entering in the terminal:
+"export FLASK_APP=API/application.py"
+"flask run" or "python3 -m flask run"
+
+6. Now that the server is running, you can open the front-end/index.html file to access the application or go to the deployed
+github pages site:  
+https://seatuna.github.io/RegCheck-App/index.html
+
+The front page will list all events. Clicking on an event will bring you to a details view that displays the event's information
+and the people who have registered for that event. From here, you can remove an entrant, change their pay status, and mark them
+present / not present (check-in).  Currently the navbar shows that there should be a "venues" and "entrants" page but I spent
+more time than expected on the API and registration/check-in that I did not implement those pages, so clicking on them will do
+nothing.
