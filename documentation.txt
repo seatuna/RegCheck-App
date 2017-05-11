@@ -6,7 +6,8 @@ Getting Started
 This project uses python and Flask to create a JSON Rest API consumed by a front-end using javascript and jquery. 
 It was important for me to be able to create something in an environment outside of CS50 IDE so that I can use these
 technologyies in the future without having everything already set up for me. To run this application, please download
-the entire source code from GitHub:
+the entire source code from GitHub (while testing to see if this all worked within CS50 ide, it failed, please download the code
+and work from there):
 Go to https://github.com/seatuna/RegCheck-App
 Click on the "Clone or Download" button
 Click on "Download ZIP"
@@ -36,14 +37,15 @@ in the terminal, but you will want to keep it activated while running the app.
 "pip3 install -r API/requirements.txt"
 "pip3 freeze"
 
-4. Now that everything is installed, you will need to create the database and populate it with some data. Do this by running
+4. Skip this step if your tables already exist and are populated.
+Now that everything is installed, you will need to create the database and populate it with some data. Do this by running
 the SQL scripts:
 "python3 API/sql_scripts.py"
 "python3 API/populate_db_sql.py"
 
 5. You should now be able to run the Flask server by entering in the terminal:
 "export FLASK_APP=API/application.py"
-"flask run" or "python3 -m flask run"
+"python3 -m flask run" (don't use flask run, it serves on a different url and port)
 
 6. Now that the server is running, you can open the front-end/index.html file to access the application or go to the deployed
 github pages site:  
