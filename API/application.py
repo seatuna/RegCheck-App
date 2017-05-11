@@ -261,7 +261,7 @@ def events():
         query = connection.execute("SELECT * FROM events")
         return jsonify({"events": [dict(row) for row in query]}), 201
 
-@APP.route("/events_entrants", methods=["GET", "POST", "DELETE"])
+@APP.route("/events_entrants", methods=["GET", "POST", "PATCH", "DELETE"])
 def events_entrants():
     """ GET, POST, PATCH, DELETE for events_entrants join table """
     # connect to DB and start transaction
@@ -292,16 +292,15 @@ def events_entrants():
             connection.close()
 
     # PATCH Request for events_entrants, can be used to check-in entrants and mark paid status
-    if request.method == "POST":
-        entrant_id = submitted_data["entrant_id"]
-        event_id = submitted_data["event_id"]
+    if request.method == "PATCH":
+        events_entrants_id = submitted_data["events_entrants_id"]
         present = submitted_data["present"]
         paid = submitted_data["paid"]
 
         try:
-            connection.execute("INSERT INTO events_entrants (event_id, entrant_id, present, paid) \
-                               VALUES (:event_id, :entrant_id, :present, :paid)",
-                               event_id=event_id, entrant_id=entrant_id, present=present, paid=paid)
+            connection.execute("UPDATE events_entrants SET present = :present, paid = :paid \
+                               WHERE id = :events_entrants_id",
+                               present=present, paid=paid, events_entrants_id=events_entrants_id)
             transaction.commit()
             return success_message, 201
         except exc.SQLAlchemyError as error:
@@ -313,8 +312,11 @@ def events_entrants():
 
     # DELETE Request for events
     elif request.method == "DELETE":
-        entrant_id = submitted_data["entrant_id"]
-        event_id = submitted_data["id"]
+        entrant_id = request.args.get("entrant_id")
+        event_id = request.args.get("event_id")
+        print(entrant_id)
+        print(event_id)
+        success_message = request.method + ' successful!\n'
 
         try:
             connection.execute("DELETE FROM events_entrants WHERE event_id = :event_id \
