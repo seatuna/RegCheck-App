@@ -160,6 +160,7 @@
                     }
                 }),
                 complete: function(data) {
+                    // clears selectedEntrantId after, so it won't affect the next registrations
                     if(selectedEntrantId) {
                         selectedEntrantId = null;
                     }
@@ -170,6 +171,7 @@
             });
         }
 
+        // Register an existing entrant if selected from the typeahead
         if (selectedEntrantId) {
             registerEntrantToEvent(selectedEntrantId);
         } else {
