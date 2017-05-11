@@ -19,7 +19,7 @@ Next, make sure you have python 3, pip, and virtualenv installed.
 To install virtualenv:
 Run "sudo apt-get install python-virtualenv" in the terminal
 
-Before moving on, open API/application.py and make sure the hash bang on the first line has the correct path to where
+Before moving on, open API/application.py, API/sql_scripts.py, and API/populate_db_sql.py, and make sure the hash bang on the first line has the correct path to where
 python3 is installed on your computer.  To check, type "which python3" in your terminal.  Copy the output path and replace
 the first line of the file with "#!/<path>".  This will tell the program to use python3.
 
