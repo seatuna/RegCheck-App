@@ -6,7 +6,14 @@ Getting Started
 This project uses python and Flask to create a JSON Rest API consumed by a front-end using javascript and jquery. 
 It was important for me to be able to create something in an environment outside of CS50 IDE so that I can use these
 technologyies in the future without having everything already set up for me. To run this application, please download
-the entire source code. Make sure you have python 3, pip, and virtualenv installed. 
+the entire source code from GitHub:
+Go to https://github.com/seatuna/RegCheck-App
+Click on the "Clone or Download" button
+Click on "Download ZIP"
+Unzip the file on your computer
+This zip file contains all the source code and db files that you will need to run this application.
+
+Next, make sure you have python 3, pip, and virtualenv installed. 
 
 To install virtualenv:
 Run "sudo apt-get install python-virtualenv" in the terminal
